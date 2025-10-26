@@ -42,12 +42,7 @@ fun SplashScreen(navController: NavController) {
                 modifier = Modifier.size(128.dp),
                 colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
             )
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = "Home Expert",
-                style = MaterialTheme.typography.headlineLarge,
-                color = MaterialTheme.colorScheme.primary
-            )
+
         }
     }
 }

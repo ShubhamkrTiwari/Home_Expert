@@ -1,5 +1,6 @@
 package com.example.homeexpert.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -7,19 +8,26 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.homeexpert.data.Professional
 import com.example.homeexpert.data.Service
 import com.example.homeexpert.data.repositories.HomeRepository
-import com.example.homeexpert.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,9 +51,13 @@ fun HomeScreen(navController: NavController) {
                     IconButton(onClick = { navController.navigate("customer_profile") }) {
                         Icon(Icons.Filled.Person, contentDescription = "Profile")
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                )
             )
-        }
+        },
+        containerColor = Color.White // White background
     ) { innerPadding ->
         LazyColumn(modifier = Modifier.padding(innerPadding)) {
             item { SearchBar(searchQuery) { searchQuery = it } }
@@ -53,8 +65,9 @@ fun HomeScreen(navController: NavController) {
             item { 
                 Text(
                     "Top Rated Professionals", 
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp)
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(start = 16.dp, top = 24.dp, end = 16.dp, bottom = 8.dp),
+                    color = Color.Black
                 )
             }
             val filteredProfessionals = professionals.filter {
@@ -62,12 +75,13 @@ fun HomeScreen(navController: NavController) {
                 it.service.name.contains(searchQuery, ignoreCase = true)
             }
             items(filteredProfessionals) { professional ->
-                ProfessionalCard(professional)
+                ProfessionalCard(professional, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
             }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchBar(query: String, onQueryChange: (String) -> Unit) {
     Box(modifier = Modifier.padding(16.dp)){
@@ -76,21 +90,28 @@ fun SearchBar(query: String, onQueryChange: (String) -> Unit) {
             onValueChange = onQueryChange,
             placeholder = {Text("Search for services or professionals")},
             modifier = Modifier.fillMaxWidth(),
+            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface
+            )
         )
     }
 }
 
 @Composable
 fun ServiceGrid(services: List<Service>, navController: NavController) {
-    Column(modifier = Modifier.padding(16.dp)) {
-        Text("Services", style = MaterialTheme.typography.titleMedium)
-        LazyVerticalGrid(columns = GridCells.Fixed(4), modifier = Modifier.height(200.dp)) {
-            items(services) {
-                Column(
-                    modifier = Modifier.padding(8.dp).clickable { navController.navigate("service_detail/${it.id}") }
-                ) {
-                    Icon(painter = painterResource(id = it.icon), contentDescription = null, modifier = Modifier.size(48.dp))
-                    Text(it.name)
+    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+        Text("Services", style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(bottom = 8.dp), color = Color.Black)
+        LazyVerticalGrid(
+            columns = GridCells.Adaptive(minSize = 80.dp),
+            modifier = Modifier.height(220.dp), // Adjust height as needed
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            items(services) { service ->
+                ServiceCard(service) {
+                    navController.navigate("service_detail/${service.id}")
                 }
             }
         }
@@ -98,15 +119,65 @@ fun ServiceGrid(services: List<Service>, navController: NavController) {
 }
 
 @Composable
-fun ProfessionalCard(professional: Professional) {
-    Card(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp).fillMaxWidth()) {
-        Row(modifier = Modifier.padding(16.dp)) {
-            Icon(painter = painterResource(id = R.drawable.ic_professional_placeholder), contentDescription = null, modifier = Modifier.size(64.dp))
-            Column(modifier = Modifier.padding(start = 16.dp)) {
+fun ServiceCard(service: Service, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier.clickable(onClick = onClick),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Icon(painter = painterResource(id = service.icon), contentDescription = null, modifier = Modifier.size(40.dp))
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(service.name, style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center)
+        }
+    }
+}
+
+@Composable
+fun ProfessionalCard(professional: Professional, modifier: Modifier = Modifier) {
+    Card(modifier = modifier.fillMaxWidth(), elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                painter = painterResource(id = professional.service.icon),
+                contentDescription = null, 
+                modifier = Modifier
+                    .size(64.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.secondaryContainer)
+                    .padding(8.dp)
+            )
+            Spacer(modifier = Modifier.width(16.dp))
+            Column(modifier = Modifier.weight(1f)) {
                 Text(professional.name, style = MaterialTheme.typography.titleMedium)
-                Text(professional.service.name, style = MaterialTheme.typography.bodyMedium)
-                Text("Rating: ${professional.rating}", style = MaterialTheme.typography.bodySmall)
+                Text(professional.service.name, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Spacer(modifier = Modifier.height(4.dp))
+                RatingBar(rating = professional.rating.toFloat())
             }
+        }
+    }
+}
+
+@Composable
+fun RatingBar(rating: Float, maxRating: Int = 5) {
+    Row {
+        for (i in 1..maxRating) {
+            val icon = if (i <= rating) Icons.Filled.Star else Icons.Outlined.Star
+            val tint = if (i <= rating) Color(0xFFFFC107) else Color.LightGray
+            Icon(
+                imageVector = icon, 
+                contentDescription = null, 
+                tint = tint,
+                modifier = Modifier.size(16.dp)
+            )
         }
     }
 }

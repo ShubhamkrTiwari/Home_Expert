@@ -10,11 +10,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Message
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
@@ -29,6 +31,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.homeexpert.data.Booking
@@ -68,7 +72,7 @@ fun MyBookingsScreen(navController: NavController) {
             }
             LazyColumn(modifier = Modifier.padding(16.dp)) {
                 items(filteredBookings) {
-                    BookingCard(it)
+                    BookingCard(it, navController)
                 }
             }
         }
@@ -76,7 +80,7 @@ fun MyBookingsScreen(navController: NavController) {
 }
 
 @Composable
-fun BookingCard(booking: Booking) {
+fun BookingCard(booking: Booking, navController: NavController) {
     val statusColor = when (booking.status) {
         "Confirmed" -> Color(0xFF4CAF50) // Green
         "Completed" -> MaterialTheme.colorScheme.primary
@@ -91,7 +95,21 @@ fun BookingCard(booking: Booking) {
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(booking.service.name, style = MaterialTheme.typography.titleLarge)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    booking.service.name,
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.weight(1f)
+                )
+                IconButton(onClick = { navController.navigate("chat/${booking.professional.name}") }) {
+                    Icon(
+                        imageVector = Icons.Default.Message,
+                        contentDescription = "Chat with ${booking.professional.name}",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+
             Spacer(modifier = Modifier.padding(4.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Default.Person, contentDescription = "Professional", modifier = Modifier.padding(end = 8.dp))
@@ -111,4 +129,10 @@ fun BookingCard(booking: Booking) {
             }
         }
     }
+}
+
+@Preview()
+@Composable
+fun MyBookingsScreenPreview() {
+    MyBookingsScreen(navController = NavController(LocalContext.current))
 }

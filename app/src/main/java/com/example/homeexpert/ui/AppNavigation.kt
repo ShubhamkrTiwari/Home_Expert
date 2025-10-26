@@ -1,6 +1,7 @@
 package com.example.homeexpert.ui
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -35,7 +36,14 @@ fun AppNavigation() {
         ) { backStackEntry ->
             ProfileSetupScreen(navController, backStackEntry.arguments?.getString("userRole"))
         }
-        composable("home") { 
+        composable("services") {
+            ServicesScreen(navController)
+        }
+        composable("home") {
+            HomeScreen(navController)
+        }
+
+        composable("Professionals") {
             HomeScreen(navController)
         }
         composable(
@@ -97,4 +105,9 @@ fun AppNavigation() {
         }
 
     }
+}
+
+@Composable
+fun ServicesScreen(x0: NavHostController) {
+    TODO("Not yet implemented")
 }

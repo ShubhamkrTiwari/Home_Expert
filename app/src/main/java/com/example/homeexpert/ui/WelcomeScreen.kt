@@ -25,7 +25,7 @@ fun WelcomeScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                painter = painterResource(id = R.drawable.homeexpo),
                 contentDescription = "Logo",
                 modifier = Modifier.size(120.dp),
                 colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
@@ -52,7 +52,7 @@ fun WelcomeScreen(navController: NavController) {
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Text("I'm a Customer, looking for a service")
+                Text("I'm a Customer")
             }
             Spacer(modifier = Modifier.height(16.dp))
             OutlinedButton(
@@ -60,7 +60,7 @@ fun WelcomeScreen(navController: NavController) {
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Text("I'm a Professional, offering my services")
+                Text("I'm a Professional")
             }
         }
     }
