@@ -12,10 +12,10 @@ import androidx.navigation.navArgument
 fun AppNavigation() {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "splash") {
-        composable("splash") { 
+        composable("splash") {
             SplashScreen(navController)
         }
-        composable("welcome") { 
+        composable("welcome") {
             WelcomeScreen(navController)
         }
         composable(
@@ -24,15 +24,34 @@ fun AppNavigation() {
         ) { backStackEntry ->
             LoginSignupScreen(navController, backStackEntry.arguments?.getString("userRole"))
         }
+
+        // Using query parameter for optional userRole
         composable(
-            "otp_verification/{userRole}",
-            arguments = listOf(navArgument("userRole") { type = NavType.StringType })
+            "signup?userRole={userRole}",
+            arguments = listOf(navArgument("userRole") { type = NavType.StringType; nullable = true })
         ) { backStackEntry ->
-            OTPVerificationScreen(navController, backStackEntry.arguments?.getString("userRole"))
+            SignUpScreen(navController, backStackEntry.arguments?.getString("userRole"))
         }
+
+        // Using query parameter for optional userRole
         composable(
-            "profile_setup/{userRole}",
-            arguments = listOf(navArgument("userRole") { type = NavType.StringType })
+            "otp_verification/{phoneNumber}?userRole={userRole}",
+            arguments = listOf(
+                navArgument("phoneNumber") { type = NavType.StringType },
+                navArgument("userRole") { type = NavType.StringType; nullable = true }
+            )
+        ) { backStackEntry ->
+            OTPVerificationScreen(
+                navController = navController,
+                phoneNumber = backStackEntry.arguments?.getString("phoneNumber") ?: "",
+                userRole = backStackEntry.arguments?.getString("userRole")
+            )
+        }
+
+        // Using query parameter for optional userRole
+        composable(
+            "profile_setup?userRole={userRole}",
+            arguments = listOf(navArgument("userRole") { type = NavType.StringType; nullable = true })
         ) { backStackEntry ->
             ProfileSetupScreen(navController, backStackEntry.arguments?.getString("userRole"))
         }

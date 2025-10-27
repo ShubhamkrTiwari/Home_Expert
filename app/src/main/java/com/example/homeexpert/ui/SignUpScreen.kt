@@ -8,23 +8,24 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 
 @Composable
-fun OTPVerificationScreen(navController: NavController, phoneNumber: String, userRole: String?) {
-    var otp by remember { mutableStateOf("") }
+fun SignUpScreen(navController: NavController, userRole: String?) {
+    var phoneNumber by remember { mutableStateOf("") }
 
     Surface(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -34,36 +35,29 @@ fun OTPVerificationScreen(navController: NavController, phoneNumber: String, use
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Text("OTP Verification", style = MaterialTheme.typography.headlineSmall)
-            Spacer(modifier = Modifier.height(8.dp))
-            Text("Enter the OTP sent to $phoneNumber", style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center)
+            Text("Create an Account", style = MaterialTheme.typography.headlineSmall)
             Spacer(modifier = Modifier.height(32.dp))
 
             OutlinedTextField(
-                value = otp,
-                onValueChange = { otp = it },
-                label = { Text("Enter OTP") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                value = phoneNumber,
+                onValueChange = { phoneNumber = it },
+                label = { Text("Phone Number (without country code)") },
+                leadingIcon = { Icon(Icons.Default.Phone, contentDescription = null) },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(24.dp))
 
             Button(
                 onClick = {
-                    // Navigate to profile setup, OTP logic is removed
-                    navController.navigate("profile_setup?userRole=$userRole") {
-                        popUpTo("signup") { inclusive = true }
-                    }
+                    // Add country code before sending to Firebase
+                    val fullPhoneNumber = "+91$phoneNumber"
+                    navController.navigate("otp_verification/$fullPhoneNumber?userRole=$userRole")
                 },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = otp.length == 6 // Assuming 6-digit OTP
+                enabled = phoneNumber.isNotBlank() // Enable button only when number is entered
             ) {
-                Text("Verify")
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-            TextButton(onClick = { /* Resend OTP logic removed */ }) {
-                Text("Resend OTP")
+                Text("Sign Up")
             }
         }
     }

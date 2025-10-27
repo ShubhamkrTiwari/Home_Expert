@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.example.homeexpert" />
+                  <option name="mobileSdkAppId" value="1:216589589981:android:91a3bf9f258383bd6bea34" />
+                  <option name="projectId" value="homeexpert-80ee8" />
+                  <option name="projectNumber" value="216589589981" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
