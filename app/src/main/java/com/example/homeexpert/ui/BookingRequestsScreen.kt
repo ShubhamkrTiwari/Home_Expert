@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,6 +25,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.homeexpert.data.Booking
@@ -71,12 +73,16 @@ fun BookingRequestCard(booking: Booking, navController: NavController) {
             }
             Spacer(modifier = Modifier.padding(16.dp))
             Row {
-                Button(onClick = { /* Handle Accept */ }, modifier = Modifier.weight(1f)) {
-                    Text("Accept")
+                Button(
+                    onClick = { /* Handle Accept */ },
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF49AF4C))
+                ) {
+                    Text("Accept", color = Color.White)
                 }
                 Spacer(modifier = Modifier.padding(horizontal = 8.dp))
                 TextButton(onClick = { /* Handle Decline */ }, modifier = Modifier.weight(1f)) {
-                    Text("Decline")
+                    Text("Decline", color = Color(0xFFEA4A3E))
                 }
             }
         }

@@ -92,6 +92,9 @@ fun AppNavigation() {
         composable("customer_profile") {
             CustomerProfileScreen(navController)
         }
+        composable("customer_notifications") {
+            CustomerNotificationsScreen(navController)
+        }
         composable("agent_dashboard") {
             AgentDashboardScreen(navController)
         }
@@ -119,8 +122,14 @@ fun AppNavigation() {
         composable("settings") {
             SettingsScreen(navController)
         }
-        composable("chat") {
-            ChatScreen(navController)
+        composable(
+            "chat/{professionalName}",
+            arguments = listOf(navArgument("professionalName") { type = NavType.StringType })
+        ) { backStackEntry ->
+            ChatScreen(
+                navController = navController,
+                chatPartnerName = backStackEntry.arguments?.getString("professionalName") ?: ""
+            )
         }
 
     }

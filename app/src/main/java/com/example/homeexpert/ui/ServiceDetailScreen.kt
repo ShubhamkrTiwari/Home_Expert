@@ -33,7 +33,7 @@ fun ServiceDetailScreen(navController: NavController, serviceId: String?) {
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text(service?.name ?: "Service Details") })
+            TopAppBar(title = { Text(service?.name ?: "Services Details") })
         }
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
@@ -42,7 +42,7 @@ fun ServiceDetailScreen(navController: NavController, serviceId: String?) {
                 Text(service.name, style = MaterialTheme.typography.headlineMedium)
                 AllProfessionals(professionals, navController)
             } else {
-                Text("Service not found")
+                Text("Services not found")
             }
         }
     }

@@ -111,11 +111,15 @@ fun ProfileSetupScreen(navController: NavController, userRole: String?) {
                         Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT).show()
                         return@Button
                     }
-                    
-                    // Navigate to the correct destination based on user role
-                    val destination = if (userRole == "customer") "home" else "agent_dashboard"
-                    navController.navigate(destination) {
-                        popUpTo("welcome") { inclusive = true }
+
+                    if (userRole == "customer") {
+                        navController.navigate("home") {
+                            popUpTo("welcome") { inclusive = true }
+                        }
+                    } else {
+                        navController.navigate("agent_dashboard") {
+                            popUpTo("welcome") { inclusive = true }
+                        }
                     }
                 },
                 modifier = Modifier.fillMaxWidth()

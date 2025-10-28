@@ -75,7 +75,7 @@ fun BookingSuccessScreen(navController: NavController) {
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2196F3))
             ) {
                 Text("Back to Home", color = Color.White)
             }

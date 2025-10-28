@@ -16,6 +16,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,6 +59,13 @@ fun SignUpScreen(navController: NavController, userRole: String?) {
                 enabled = phoneNumber.isNotBlank() // Enable button only when number is entered
             ) {
                 Text("Sign Up")
+            }
+            TextButton(onClick = {
+                navController.navigate("home") {
+                    popUpTo("welcome") { inclusive = true }
+                }
+            }) {
+                Text("Skip")
             }
         }
     }

@@ -41,7 +41,7 @@ fun LoginSignupScreen(navController: NavController, userRole: String?) {
             OutlinedTextField(
                 value = phoneNumber,
                 onValueChange = { phoneNumber = it },
-                label = { Text("Phone Number (without country code)") },
+                label = { Text("Phone Number") },
                 leadingIcon = { Icon(Icons.Default.Phone, contentDescription = null) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                 modifier = Modifier.fillMaxWidth()
@@ -51,10 +51,18 @@ fun LoginSignupScreen(navController: NavController, userRole: String?) {
                 onClick = {
                     // Add country code before sending to Firebase
                     val fullPhoneNumber = "+91$phoneNumber"
-                    navController.navigate("otp_verification/$fullPhoneNumber?userRole=$userRole")
+                    if (userRole == "customer") {
+                        navController.navigate("home") {
+                            popUpTo("welcome") { inclusive = true }
+                        }
+                    } else {
+                        navController.navigate("agent_dashboard") {
+                            popUpTo("welcome") { inclusive = true }
+                        }
+                    }
                 },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = phoneNumber.isNotBlank()
+                enabled = true
             ) {
                 Text("Login with OTP")
             }
