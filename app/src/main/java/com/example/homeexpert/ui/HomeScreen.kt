@@ -125,6 +125,7 @@ fun SearchBar(query: String, onQueryChange: (String) -> Unit) {
             onValueChange = onQueryChange,
             placeholder = {Text("Search for services or professionals")},
             modifier = Modifier.fillMaxWidth(),
+            shape = CircleShape,
             leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
             colors = OutlinedTextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.surface,

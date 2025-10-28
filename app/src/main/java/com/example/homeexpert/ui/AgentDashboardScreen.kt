@@ -43,7 +43,7 @@ fun AgentBottomNavigation(navController: NavController) {
     val items = listOf(
         AgentBottomNavItem("Dashboard", Icons.Default.Dashboard, "agent_dashboard"),
         AgentBottomNavItem("Bookings", Icons.Default.WorkHistory, "booking_requests"),
-        AgentBottomNavItem("Earnings", Icons.Default.MonetizationOn, "earnings_summary"),
+        AgentBottomNavItem("Earnings", Icons.Default.CurrencyRupee, "earnings_summary"),
         AgentBottomNavItem("Profile", Icons.Default.Person, "agent_profile")
     )
     NavigationBar {
@@ -76,7 +76,17 @@ fun AgentDashboardScreen(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Dashboard") },
+                title = {
+                    Column {
+                        Text("Dashboard")
+                        Text(
+                            "INR 1,250.00",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF2E7D32)
+                        )
+                    }
+                },
                 actions = {
                     IconButton(onClick = { navController.navigate("notifications") }) {
                         Icon(Icons.Default.Notifications, contentDescription = "Notifications")
@@ -114,7 +124,7 @@ fun DashboardHeader(onEarningsClick: () -> Unit) {
             Spacer(modifier = Modifier.height(16.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
                 StatItem("Completed", "15 Jobs")
-                StatItem("Rating", "4.9/5.0")
+                StatItem("Rating", "4.5/5.0")
             }
         }
     }

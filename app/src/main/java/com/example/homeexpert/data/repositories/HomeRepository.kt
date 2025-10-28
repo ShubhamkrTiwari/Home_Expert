@@ -21,9 +21,9 @@ class HomeRepository {
 
     fun getProfessionals(): List<Professional> {
         return listOf(
-            Professional("1", "John Doe", getServices()[0], 4.5f, LatLng(12.9716, 77.5946)),
-            Professional("2", "Jane Smith", getServices()[1], 4.8f, LatLng(12.9716, 77.5946), isFeatured = true),
-            Professional("3", "Peter Jones", getServices()[2], 4.2f, LatLng(12.9716, 77.5946))
+            Professional("1", "Amit Kumar", getServices()[0], 4.5f, LatLng(12.9716, 77.5946)),
+            Professional("2", "Ravi Kumar", getServices()[1], 4.8f, LatLng(12.9716, 77.5946), isFeatured = true),
+            Professional("3", "Rakesh Kumar", getServices()[2], 4.2f, LatLng(12.9716, 77.5946))
         )
     }
 
