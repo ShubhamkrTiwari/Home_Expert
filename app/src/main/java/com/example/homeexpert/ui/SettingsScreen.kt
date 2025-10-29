@@ -91,7 +91,7 @@ fun SettingsScreen(navController: NavController, settingsViewModel: SettingsView
                     title = "Manage Address",
                     subtitle = "Update your shipping address",
                     icon = Icons.Default.LocationOn,
-                    onClick = { /* TODO: Navigate to address screen */ }
+                    onClick = { navController.navigate("address") }
                 )
             }
             item {
@@ -99,7 +99,7 @@ fun SettingsScreen(navController: NavController, settingsViewModel: SettingsView
                     title = "Manage Payment Methods",
                     subtitle = "Add or remove payment options",
                     icon = Icons.Default.Payment,
-                    onClick = { /* TODO: Navigate to payment screen */ }
+                    onClick = { navController.navigate("payment") }
                 )
             }
         }

@@ -122,6 +122,12 @@ fun AppNavigation() {
         composable("settings") {
             SettingsScreen(navController)
         }
+        composable("address") {
+            AddressScreen(navController)
+        }
+        composable("payment") {
+            PaymentScreen(navController)
+        }
         composable(
             "chat/{professionalName}",
             arguments = listOf(navArgument("professionalName") { type = NavType.StringType })

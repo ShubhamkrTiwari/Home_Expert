@@ -36,3 +36,20 @@ data class Booking(
     val time: String,
     val status: String // e.g., "Confirmed", "Completed", "Cancelled"
 )
+
+data class PaymentMethod(
+    val id: String,
+    val cardType: String, // e.g., "Visa", "Mastercard"
+    val lastFourDigits: String,
+    val expiryDate: String,
+    @DrawableRes val cardIcon: Int
+)
+
+data class Address(
+    val id: String,
+    val label: String, // e.g., "Home", "Work"
+    val street: String,
+    val city: String,
+    val state: String,
+    val zipCode: String
+)
