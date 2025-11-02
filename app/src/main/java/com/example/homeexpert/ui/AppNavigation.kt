@@ -33,6 +33,10 @@ fun AppNavigation() {
             SignUpScreen(navController, backStackEntry.arguments?.getString("userRole"))
         }
 
+        composable("professional_signup") {
+            ProfessionalSignupScreen(navController)
+        }
+
         // Using query parameter for optional userRole
         composable(
             "otp_verification/{phoneNumber}?userRole={userRole}",

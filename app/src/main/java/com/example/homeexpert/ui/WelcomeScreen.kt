@@ -56,7 +56,7 @@ fun WelcomeScreen(navController: NavController) {
             }
             Spacer(modifier = Modifier.height(16.dp))
             OutlinedButton(
-                onClick = { navController.navigate("login_signup/professional") },
+                onClick = { navController.navigate("professional_signup") },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(8.dp)
             ) {
