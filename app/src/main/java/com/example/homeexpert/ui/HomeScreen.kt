@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ListAlt
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.*
@@ -28,6 +29,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.homeexpert.data.Professional
 import com.example.homeexpert.data.Service
 import com.example.homeexpert.data.repositories.HomeRepository
+import kotlinx.coroutines.launch
 
 // Data class for bottom navigation items
 data class CustomerBottomNavItem(val label: String, val icon: ImageVector, val route: String)
@@ -36,7 +38,7 @@ data class CustomerBottomNavItem(val label: String, val icon: ImageVector, val r
 fun CustomerBottomNavigation(navController: NavController) {
     val items = listOf(
         CustomerBottomNavItem("Home", Icons.Default.Home, "home"),
-        CustomerBottomNavItem("Bookings", Icons.Default.ListAlt, "my_bookings"),
+        CustomerBottomNavItem("Bookings", Icons.AutoMirrored.Filled.ListAlt, "my_bookings"),
         CustomerBottomNavItem("Profile", Icons.Default.Person, "customer_profile")
     )
     NavigationBar {
@@ -67,10 +69,17 @@ fun CustomerBottomNavigation(navController: NavController) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController) {
-    val homeRepository = HomeRepository()
-    val services = homeRepository.getServices()
-    val professionals = homeRepository.getProfessionals()
+    var services by remember { mutableStateOf(emptyList<Service>()) }
+    var professionals by remember { mutableStateOf(emptyList<Professional>()) }
     var searchQuery by remember { mutableStateOf("") }
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        coroutineScope.launch {
+            services = HomeRepository.getServices()
+            professionals = HomeRepository.getProfessionals()
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -103,13 +112,17 @@ fun HomeScreen(navController: NavController) {
                     color = Color.Black
                 )
             }
-            val filteredProfessionals = professionals.filter {
-                it.name.contains(searchQuery, ignoreCase = true) ||
-                it.service.name.contains(searchQuery, ignoreCase = true)
+            val filteredProfessionals = professionals.filter { professional ->
+                val service = services.find { it.id == professional.serviceId }?.name ?: ""
+                professional.name.contains(searchQuery, ignoreCase = true) ||
+                        service.contains(searchQuery, ignoreCase = true)
             }
             items(filteredProfessionals) { professional ->
-                ProfessionalCard(professional, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                    navController.navigate("booking_screen/${professional.id}")
+                val service = services.find { it.id == professional.serviceId }
+                if (service != null) {
+                    ProfessionalCard(professional, service, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                        navController.navigate("booking_screen/${professional.id}")
+                    }
                 }
             }
         }
@@ -168,7 +181,7 @@ fun ServiceCard(service: Service, onClick: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Image(painter = painterResource(id = service.icon), contentDescription = null, modifier = Modifier.size(40.dp))
+            Image(painter = painterResource(id = getIconForService(service.name)), contentDescription = null, modifier = Modifier.size(40.dp))
             Spacer(modifier = Modifier.height(8.dp))
             Text(service.name, style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center)
         }
@@ -176,14 +189,14 @@ fun ServiceCard(service: Service, onClick: () -> Unit) {
 }
 
 @Composable
-fun ProfessionalCard(professional: Professional, modifier: Modifier = Modifier, onClick: () -> Unit) {
+fun ProfessionalCard(professional: Professional, service: Service, modifier: Modifier = Modifier, onClick: () -> Unit) {
     Card(modifier = modifier.fillMaxWidth().clickable(onClick = onClick), elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)) {
         Row(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                painter = painterResource(id = professional.service.icon),
+                painter = painterResource(id = getIconForService(service.name)),
                 contentDescription = null,
                 modifier = Modifier
                     .size(64.dp)
@@ -194,9 +207,9 @@ fun ProfessionalCard(professional: Professional, modifier: Modifier = Modifier, 
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(professional.name, style = MaterialTheme.typography.titleMedium)
-                Text(professional.service.name, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(service.name, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(modifier = Modifier.height(4.dp))
-                RatingBar(rating = professional.rating.toFloat())
+                RatingBar(rating = professional.rating)
             }
         }
     }

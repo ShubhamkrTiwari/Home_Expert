@@ -8,9 +8,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Message
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.Message
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -23,11 +23,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,15 +32,28 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.homeexpert.data.Booking
+import com.example.homeexpert.data.Professional
+import com.example.homeexpert.data.Service
 import com.example.homeexpert.data.repositories.HomeRepository
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyBookingsScreen(navController: NavController) {
-    val homeRepository = HomeRepository()
-    val bookings = homeRepository.getBookings()
+    var bookings by remember { mutableStateOf(emptyList<Booking>()) }
+    var professionals by remember { mutableStateOf(emptyList<Professional>()) }
+    var services by remember { mutableStateOf(emptyList<Service>()) }
     var tabIndex by remember { mutableIntStateOf(0) }
     val tabs = listOf("Upcoming", "Completed", "Cancelled")
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        coroutineScope.launch {
+            bookings = HomeRepository.getBookings()
+            professionals = HomeRepository.getProfessionals()
+            services = HomeRepository.getServices()
+        }
+    }
 
     val filteredBookings = remember(tabIndex, bookings) {
         when (tabs[tabIndex]) {
@@ -56,9 +65,7 @@ fun MyBookingsScreen(navController: NavController) {
     }
 
     Scaffold(
-        topBar = {
-            TopAppBar(title = { Text("My Bookings") })
-        }
+        topBar = { TopAppBar(title = { Text("My Bookings") }) }
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
             PrimaryTabRow(selectedTabIndex = tabIndex) {
@@ -71,8 +78,12 @@ fun MyBookingsScreen(navController: NavController) {
                 }
             }
             LazyColumn(modifier = Modifier.padding(16.dp)) {
-                items(filteredBookings) {
-                    BookingCard(it, navController)
+                items(filteredBookings) { booking ->
+                    val professional = professionals.find { it.id == booking.professionalId }
+                    val service = services.find { it.id == booking.serviceId }
+                    if (professional != null && service != null) {
+                        BookingCard(booking, professional, service, navController)
+                    }
                 }
             }
         }
@@ -80,7 +91,7 @@ fun MyBookingsScreen(navController: NavController) {
 }
 
 @Composable
-fun BookingCard(booking: Booking, navController: NavController) {
+fun BookingCard(booking: Booking, professional: Professional, service: Service, navController: NavController) {
     val statusColor = when (booking.status) {
         "Confirmed" -> Color(0xFF4CAF50) // Green
         "Completed" -> MaterialTheme.colorScheme.primary
@@ -97,14 +108,14 @@ fun BookingCard(booking: Booking, navController: NavController) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    booking.service.name,
+                    service.name,
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.weight(1f)
                 )
-                IconButton(onClick = { navController.navigate("chat/${booking.professional.name}") }) {
+                IconButton(onClick = { navController.navigate("chat/${professional.name}") }) {
                     Icon(
-                        imageVector = Icons.Default.Message,
-                        contentDescription = "Chat with ${booking.professional.name}",
+                        imageVector = Icons.AutoMirrored.Filled.Message,
+                        contentDescription = "Chat with ${professional.name}",
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }
@@ -113,7 +124,7 @@ fun BookingCard(booking: Booking, navController: NavController) {
             Spacer(modifier = Modifier.padding(4.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Default.Person, contentDescription = "Professional", modifier = Modifier.padding(end = 8.dp))
-                Text("with ${booking.professional.name}", style = MaterialTheme.typography.bodyLarge)
+                Text("with ${professional.name}", style = MaterialTheme.typography.bodyLarge)
             }
             Spacer(modifier = Modifier.padding(4.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -131,7 +142,7 @@ fun BookingCard(booking: Booking, navController: NavController) {
     }
 }
 
-@Preview()
+@Preview
 @Composable
 fun MyBookingsScreenPreview() {
     MyBookingsScreen(navController = NavController(LocalContext.current))
