@@ -22,34 +22,53 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.homeexpert.data.Booking
+import com.example.homeexpert.data.Professional
+import com.example.homeexpert.data.Service
 import com.example.homeexpert.data.repositories.HomeRepository
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookingRequestsScreen(navController: NavController) {
-    val homeRepository = HomeRepository()
-    val bookingRequests = homeRepository.getBookings().filter { it.status == "Confirmed" } // Example filter
+    var bookings by remember { mutableStateOf(emptyList<Booking>()) }
+    var professionals by remember { mutableStateOf(emptyList<Professional>()) }
+    var services by remember { mutableStateOf(emptyList<Service>()) }
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        coroutineScope.launch {
+            bookings = HomeRepository.getBookings()
+            professionals = HomeRepository.getProfessionals()
+            services = HomeRepository.getServices()
+        }
+    }
+
+    val bookingRequests = bookings.filter { it.status == "Confirmed" } // Example filter
 
     Scaffold(
         topBar = { TopAppBar(title = { Text("Booking Requests") }) }
     ) { innerPadding ->
         LazyColumn(modifier = Modifier.padding(innerPadding).padding(16.dp)) {
-            items(bookingRequests) {
-                BookingRequestCard(it, navController)
+            items(bookingRequests) { booking ->
+                val professional = professionals.find { it.id == booking.professionalId }
+                val service = services.find { it.id == booking.serviceId }
+                if (professional != null && service != null) {
+                    BookingRequestCard(booking, professional, service, navController)
+                }
             }
         }
     }
 }
 
 @Composable
-fun BookingRequestCard(booking: Booking, navController: NavController) {
+fun BookingRequestCard(booking: Booking, professional: Professional, service: Service, navController: NavController) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -58,11 +77,11 @@ fun BookingRequestCard(booking: Booking, navController: NavController) {
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(booking.service.name, style = MaterialTheme.typography.titleLarge)
+            Text(service.name, style = MaterialTheme.typography.titleLarge)
             Spacer(modifier = Modifier.padding(4.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Default.Person, contentDescription = "Customer", modifier = Modifier.padding(end = 8.dp))
-                Text("with ${booking.professional.name}", style = MaterialTheme.typography.bodyLarge)
+                Text("with ${professional.name}", style = MaterialTheme.typography.bodyLarge)
             }
             Spacer(modifier = Modifier.padding(4.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {

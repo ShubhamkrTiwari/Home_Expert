@@ -33,6 +33,13 @@ fun AppNavigation() {
             SignUpScreen(navController, backStackEntry.arguments?.getString("userRole"))
         }
 
+        composable(
+            "email_verification/{email}",
+            arguments = listOf(navArgument("email") { type = NavType.StringType })
+        ) { backStackEntry ->
+            EmailVerificationScreen(navController, backStackEntry.arguments?.getString("email"))
+        }
+
         composable("professional_signup") {
             ProfessionalSignupScreen(navController)
         }
@@ -45,11 +52,7 @@ fun AppNavigation() {
                 navArgument("userRole") { type = NavType.StringType; nullable = true }
             )
         ) { backStackEntry ->
-            OTPVerificationScreen(
-                navController = navController,
-                phoneNumber = backStackEntry.arguments?.getString("phoneNumber") ?: "",
-                userRole = backStackEntry.arguments?.getString("userRole")
-            )
+
         }
 
         // Using query parameter for optional userRole
@@ -110,8 +113,8 @@ fun AppNavigation() {
             arguments = listOf(navArgument("bookingId") { type = NavType.StringType })
         ) { backStackEntry ->
             JobDetailsScreen(
-                navController = navController,
-                bookingId = backStackEntry.arguments?.getString("bookingId")
+                bookingId = backStackEntry.arguments?.getString("bookingId"),
+                navController = navController
             )
         }
         composable("earnings_summary") {
@@ -146,6 +149,6 @@ fun AppNavigation() {
 }
 
 @Composable
-fun ServicesScreen(x0: NavHostController) {
-    TODO("Not yet implemented")
+fun ServicesScreen(navController: NavHostController) {
+    // TODO: Not yet implemented
 }
