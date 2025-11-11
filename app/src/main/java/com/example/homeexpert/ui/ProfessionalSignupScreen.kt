@@ -33,17 +33,43 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import kotlinx.coroutines.launch
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-val androidxcompose: Any
-    get() {
-        TODO()
-    }
+// Initialize the Supabase client
+val supabase = createSupabaseClient(
+    supabaseUrl = "https://upjzswprcdeqgtijlxfn.supabase.co",
+    supabaseKey = "<your_supabase_anon_key>" // Replace with your actual anon key
+) {
+    val Postgrest = null
+    install(Postgrest)
+
+}
+
+fun createSupabaseClient(supabaseUrl: String, supabaseKey: String, function: () -> Unit) {
+    TODO("Not yet implemented")
+}
+
+fun install(directory: Nothing?) {}
+
+@Serializable
+data class ProfessionalProfile(
+    val name: String,
+    @SerialName("phone_number")
+    val phoneNumber: String,
+    val category: String,
+    val location: String,
+    val price: Double
+)
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,6 +81,7 @@ fun ProfessionalSignupScreen(navController: NavController) {
     var phoneNumber by remember { mutableStateOf("") }
     var expanded by remember { mutableStateOf(false) }
     val categories = listOf("electrician", "plumber", "tutor", "carpenter", "painter", "cleaner")
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
@@ -164,7 +191,24 @@ fun ProfessionalSignupScreen(navController: NavController) {
                     Spacer(modifier = Modifier.height(24.dp))
 
                     Button(
-                        onClick = { /* TODO: Handle signup logic */ },
+                        onClick = {
+                            coroutineScope.launch {
+                                val professionalProfile = ProfessionalProfile(
+                                    name = name,
+                                    phoneNumber = phoneNumber,
+                                    category = category,
+                                    location = location,
+                                    price = price.toDoubleOrNull() ?: 0.0
+                                )
+                                try {
+                                    supabase.from("professionals").insert(professionalProfile)
+                                    // Navigate back on success
+                                    navController.popBackStack()
+                                } catch (e: Exception) {
+                                    // You can add error handling here, like showing a toast or a snackbar
+                                }
+                            }
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp)
@@ -175,4 +219,12 @@ fun ProfessionalSignupScreen(navController: NavController) {
             }
         }
     }
+}
+
+private fun Unit.insert(professionalProfile: ProfessionalProfile) {
+    TODO("Not yet implemented")
+}
+
+private fun Unit.from(string: String) {
+    TODO("Not yet implemented")
 }
